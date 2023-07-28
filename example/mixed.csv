@@ -1,0 +1,8 @@
+[gene-expression]
+reference,/datf/enzedeng/test_data/dataset-multi-practice/refdata-gex-GRCh38-2020-A
+[vdj]
+reference,/datf/enzedeng/test_data/dataset-multi-practice/refdata-cellranger-vdj-GRCh38-alts-ensembl-5.0.0
+[libraries]
+fastq_id,fastqs,lanes,feature_types,subsample_rate
+WXC-CHL-RNA-lib-n,/datf/enzedeng/data/Mixed_sample/WXC-CHL/raw_data/mixed_RNA,4,gene expression,
+WXC-CHL-TCR-lib-n,/datf/enzedeng/data/Mixed_sample/WXC-CHL/raw_data/mixed_TCR,4,VDJ-T,

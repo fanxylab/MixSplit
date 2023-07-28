@@ -1,0 +1,73 @@
+configfile: "config.yaml"
+
+
+SAMPLES = ['WXC-P', 'CHL-P']
+MIXED_SAMPLE = ['mixed']
+
+rule all:
+  input:
+    #expand("cellranger/{sample}/outs/per_sample_outs/{sample}/count/sample_alignments.bam", sample=SAMPLES + MIXED_SAMPLE),
+    #expand("vcf/{sample}.snp.vcf.gz", sample=SAMPLES + MIXED_SAMPLE),
+    #expand("sample_vcf/{sample}.vcf", sample=SAMPLES),
+    expand("splited_matrix/{sample}_matrix.mtx.gz", sample=SAMPLES),
+
+rule cellranger_multi:
+  input:
+    "{sample}.csv"
+  output:
+    "cellranger/{sample}/outs/per_sample_outs/{sample}/count/sample_alignments.bam"
+  params:
+    mem = 64,
+    outdir = "cellranger",
+  threads: 40
+  shell:
+    "{config[cr]} multi "
+    "--localcores={threads} "
+    "--localmem={params.mem} "
+    "--id={wildcards.sample} "
+    "--csv={input} "
+    "&& mv -f {wildcards.sample} {params.outdir} "
+    "&& rmdir {wildcards.sample}"
+
+rule bcftools_call:
+  input:
+    "cellranger/{sample}/outs/per_sample_outs/{sample}/count/sample_alignments.bam"
+  output:
+    "vcf/{sample}.vcf"
+  threads:
+    40
+  shell:
+    "{config[bt]} mpileup {input} "
+    "--fasta-ref {config[cr_ref]}/fasta/genome.fa "
+    "| {config[bt]} call -mv -o {output}"
+
+rule bcftools_filter:
+  input:
+    "vcf/{sample}.vcf"
+  output:
+    "vcf/{sample}.snp.vcf.gz"
+  shell:
+    '''{config[bt]} view -v snps {input} '''
+    '''| {config[bt]} filter -i 'INFO/DP>=10&&FORMAT/GT=="1/1"' '''
+    '''| {config[bt]} view -Oz -o {output}'''
+
+rule choose_snp:
+  input:
+    expand("vcf/{sample}.snp.vcf.gz", sample=SAMPLES)
+  output:
+    expand("sample_vcf/{sample}.vcf", sample=SAMPLES)
+  shell:
+    "{config[py]} {config[css]} --outpre sample_vcf/ {input}"
+
+rule split_sample:
+  input:
+    sample=expand("sample_vcf/{sample}.vcf", sample=SAMPLES),
+    mixed=expand("cellranger/{sample}/outs/per_sample_outs/{sample}/count/sample_alignments.bam", sample=MIXED_SAMPLE)
+  output:
+    expand("splited_matrix/{sample}_matrix.mtx.gz", sample=SAMPLES)
+  params:
+    bam=expand("cellranger/{sample}/outs/per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz", sample=MIXED_SAMPLE)
+  shell:
+    "{config[py]} {config[ss]} --outpre splited_matrix/ "
+    "--bam {input.mixed} {input.sample} "
+    "--barcode {params.bam} "

@@ -1,0 +1,8 @@
+py: /datf/enzedeng/mambaforge/envs/sc/bin/python
+st: /datf/enzedeng/mambaforge/envs/sc/bin/samtools
+bt: /datf/enzedeng/mambaforge/envs/sc/bin/bcftools
+sb: /datf/enzedeng/mambaforge/envs/sc/bin/sambamba
+cr: /datd/enzedeng/software/cellranger-7.0.1/bin/cellranger
+cr_ref: /datf/enzedeng/test_data/dataset-multi-practice/refdata-gex-GRCh38-2020-A
+css: /datf/enzedeng/data/Mixed_sample/WXC-CHL/scripts/choose_snp_sites.py
+ss: /datf/enzedeng/data/Mixed_sample/WXC-CHL/scripts/split_sample.py
