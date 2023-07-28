@@ -36,7 +36,7 @@
   
   - pip=22.3.1
     
-          - matplotlib-venn=0.11.9
+    - matplotlib-venn=0.11.9
 
 - samtools=1.16.1
 
@@ -73,8 +73,10 @@
 ### 常见问题解答
 
 Q: cellranger multi最后运行完成后有一步mv操作报错，怎么解决？
+
 A: 在 cellranger multi 运行完成后，如果出现 mv 操作报错，可以尝试执行以下解决方案：
 手动执行 mv 操作：进入 workflow 目录，将 sample 文件夹手动移动到 cellranger 文件夹中。您可以使用以下命令：
+
 `mv workflow/sample workflow/cellranger`
 
 ### 支持与反馈
